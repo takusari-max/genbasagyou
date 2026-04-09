@@ -611,7 +611,6 @@ function getMailRecipients_() {
     var dept     = String(row[2]).trim();  // C列: 部
     var position = String(row[4]).trim();  // E列: 職位
     var name     = String(row[5]).trim();  // F列: 氏名
-    var remark   = String(row[10]).trim(); // K列: 備考
     var mailAddr = String(row[11]).trim(); // L列: 送信用アドレス（優先）
     if (!mailAddr) {
       mailAddr = String(row[8]).trim();    // I列: mail（フォールバック）
@@ -633,23 +632,13 @@ function getMailRecipients_() {
     // ── CC ──
     var ccReason = '';
 
-    // 社会基盤企画総括部の部長・GM
+    // 社会基盤企画総括部の部長（GM は下の条件で網羅）
     if (isBucho && isKikaku) {
-      ccReason = position + '（社会基盤企画総括部）';
-    } else if (isGM && isKikaku) {
-      ccReason = position + '（社会基盤企画総括部）';
+      ccReason = '部長（社会基盤企画総括部）';
     }
-    // GM（社会基盤企画総括部以外も含む）
+    // GM（部署を問わず全て）
     else if (isGM) {
       ccReason = position;
-    }
-    // ユニット長 ●、ユニット長代理、本部長、本部長 ●
-    else if (/^ユニット長/.test(position) || /^本部長/.test(position)) {
-      ccReason = position;
-    }
-    // K列に「チームリーダー」
-    else if (remark.indexOf('チームリーダー') !== -1) {
-      ccReason = '備考:チームリーダー';
     }
     // F列の氏名が「井野 元太」
     else if (name === '井野 元太') {

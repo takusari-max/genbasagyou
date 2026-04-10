@@ -541,7 +541,7 @@ function sendScheduledMail() {
   // ── メール本文を取得 ──
   var mailSheet = ss.getSheetByName('メール');
   if (!mailSheet) {
-    Logger.log('「メール」シートが見つかりません。送信をスキップします。');
+    Logger.log('「メール」シートが見つかりません。下書き作成をスキップします。');
     return;
   }
 
@@ -565,19 +565,19 @@ function sendScheduledMail() {
   if (!recipients) return;
 
   if (recipients.toList.length === 0 && recipients.ccList.length === 0) {
-    Logger.log('送信先が見つかりませんでした。送信をスキップします。');
+    Logger.log('送信先が見つかりませんでした。下書き作成をスキップします。');
     return;
   }
 
   var toStr = recipients.toList.join(',');
   var ccStr = recipients.ccList.join(',');
 
-  // メール送信
-  GmailApp.sendEmail(toStr, subject, body, {
+  // メール下書きを作成（送信はせず下書き保存のみ）
+  GmailApp.createDraft(toStr, subject, body, {
     cc: ccStr
   });
 
-  Logger.log('メールを送信しました → TO: ' + toStr + ' / CC: ' + ccStr);
+  Logger.log('メール下書きを保存しました → TO: ' + toStr + ' / CC: ' + ccStr);
 }
 
 
@@ -619,11 +619,10 @@ function getMailRecipients_() {
     if (!mailAddr) continue;
 
     var isBucho    = (position === '部長');
-    var isGM       = /^GM/.test(position);
-    var isKikaku   = (dept === '社会基盤企画総括部');
+    var isGM       = (position === 'GM' || position === 'GM ●');
 
-    // ── TO: 部長（ただし社会基盤企画総括部の部長はCCへ） ──
-    if (isBucho && !isKikaku) {
+    // ── TO: 部長 ──
+    if (isBucho) {
       toList.push(mailAddr);
       Logger.log('TO対象: ' + name + '（' + position + ' / ' + dept + '）→ ' + mailAddr);
       continue;
@@ -632,12 +631,8 @@ function getMailRecipients_() {
     // ── CC ──
     var ccReason = '';
 
-    // 社会基盤企画総括部の部長（GM は下の条件で網羅）
-    if (isBucho && isKikaku) {
-      ccReason = '部長（社会基盤企画総括部）';
-    }
-    // GM（部署を問わず全て）
-    else if (isGM) {
+    // GM または GM ●
+    if (isGM) {
       ccReason = position;
     }
     // F列の氏名が「井野 元太」

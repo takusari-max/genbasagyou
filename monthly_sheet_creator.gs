@@ -601,6 +601,12 @@ function getMailRecipients_() {
     return null;
   }
 
+  // 総括管理担当 / 安全担当の氏名はスクリプトプロパティから取得（未設定時はデフォルト値）
+  var props = PropertiesService.getScriptProperties();
+  var soukatsuName = (props.getProperty('SOUKATSU_KANRI_NAME') || '井野　元太').trim();
+  var anzenName    = (props.getProperty('ANZEN_TANTOU_NAME')    || '佐藤　正樹').trim();
+  Logger.log('総括管理担当: ' + soukatsuName + ' / 安全担当: ' + anzenName);
+
   var pbData = phoneBook.getDataRange().getValues();
   var toList = [];
   var ccList = [];
@@ -640,9 +646,13 @@ function getMailRecipients_() {
     else if (isGM) {
       ccReason = position;
     }
-    // F列の氏名が「井野 元太」
-    else if (name === '井野 元太') {
-      ccReason = '氏名指定';
+    // 総括管理担当（スクリプトプロパティで指定された氏名）
+    else if (soukatsuName && name === soukatsuName) {
+      ccReason = '総括管理担当';
+    }
+    // 安全担当（スクリプトプロパティで指定された氏名）
+    else if (anzenName && name === anzenName) {
+      ccReason = '安全担当';
     }
 
     if (ccReason) {

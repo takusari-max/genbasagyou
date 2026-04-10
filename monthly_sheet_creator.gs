@@ -587,7 +587,7 @@ function sendScheduledMail() {
 // ============================================================
 
 function getMailRecipients_() {
-  var phoneBookId = '1x6Uy711HFPwdLPFNxyCvMk0Fo77XC4MJNEMh29_n0Lo';
+  var phoneBookId = '1GbWVn7HZ7fPWpiv2GTdpMXksU-SBzCM0UdAc7Bwb02M';
   var phoneBook;
   try {
     phoneBook = SpreadsheetApp.openById(phoneBookId)

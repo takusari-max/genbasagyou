@@ -620,9 +620,10 @@ function getMailRecipients_() {
 
     var isBucho    = (position === '部長');
     var isGM       = (position === 'GM' || position === 'GM ●');
+    var isKikaku   = (dept === '社会基盤企画総括部');
 
-    // ── TO: 部長 ──
-    if (isBucho) {
+    // ── TO: 部長（ただし社会基盤企画総括部の部長はCCへ） ──
+    if (isBucho && !isKikaku) {
       toList.push(mailAddr);
       Logger.log('TO対象: ' + name + '（' + position + ' / ' + dept + '）→ ' + mailAddr);
       continue;
@@ -631,8 +632,12 @@ function getMailRecipients_() {
     // ── CC ──
     var ccReason = '';
 
+    // 社会基盤企画総括部の部長
+    if (isBucho && isKikaku) {
+      ccReason = '部長（社会基盤企画総括部）';
+    }
     // GM または GM ●
-    if (isGM) {
+    else if (isGM) {
       ccReason = position;
     }
     // F列の氏名が「井野 元太」

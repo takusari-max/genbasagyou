@@ -601,11 +601,12 @@ function getMailRecipients_() {
     return null;
   }
 
-  // 総括管理担当 / 安全担当の氏名はスクリプトプロパティから取得（未設定時はデフォルト値）
+  // 総括管理担当 / 安全担当 / 技術強化担当の氏名はスクリプトプロパティから取得（未設定時はデフォルト値）
   var props = PropertiesService.getScriptProperties();
-  var soukatsuName = (props.getProperty('SOUKATSU_KANRI_NAME') || '井野　元太').trim();
+  var soukatsuName = (props.getProperty('SOUKATSU_KANRI_NAME')  || '井野　元太').trim();
   var anzenName    = (props.getProperty('ANZEN_TANTOU_NAME')    || '佐藤　正樹').trim();
-  Logger.log('総括管理担当: ' + soukatsuName + ' / 安全担当: ' + anzenName);
+  var gijutsuName  = (props.getProperty('GIJUTSU_KYOUKA_NAME')  || '藤井　直樹').trim();
+  Logger.log('総括管理担当: ' + soukatsuName + ' / 安全担当: ' + anzenName + ' / 技術強化担当: ' + gijutsuName);
 
   var pbData = phoneBook.getDataRange().getValues();
   var toList = [];
@@ -653,6 +654,10 @@ function getMailRecipients_() {
     // 安全担当（スクリプトプロパティで指定された氏名）
     else if (anzenName && name === anzenName) {
       ccReason = '安全担当';
+    }
+    // 技術強化担当（スクリプトプロパティで指定された氏名）
+    else if (gijutsuName && name === gijutsuName) {
+      ccReason = '技術強化担当';
     }
 
     if (ccReason) {
